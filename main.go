@@ -161,11 +161,11 @@ func (t *TagContext) tagFiles(path string, f os.FileInfo, err error) error {
 				processed = true
 			}
 		} else {
-			if fname[1] == "go" && t.templateFiles.goTemplateFile != nil {
+			if fname[len(fname)-1] == "go" && t.templateFiles.goTemplateFile != nil {
 				applier = &golangApplier{}
 				processed = true
 			}
-			if strings.ToLower(fname[1]) == "dockerfile" && t.templateFiles.dTemplateFile != nil {
+			if strings.ToLower(fname[0]) == "dockerfile" && t.templateFiles.dTemplateFile != nil {
 				applier = &dockerfileApplier{}
 				processed = true
 			}
@@ -173,7 +173,7 @@ func (t *TagContext) tagFiles(path string, f os.FileInfo, err error) error {
 				applier = &makefileApplier{}
 				processed = true
 			}
-			if fname[1] == "sh" && t.templateFiles.shTemplateFile != nil {
+			if fname[len(fname)-1] == "sh" && t.templateFiles.shTemplateFile != nil {
 				applier = &bashApplier{}
 				processed = true
 			}
