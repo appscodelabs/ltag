@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -47,6 +48,11 @@ func (g *golangApplier) CheckHeader(target *os.File, t *TagContext) (bool, error
 
 	if n == len(templateBuf) {
 		if strings.Compare(string(templateBuf), string(targetBuf)) == 0 {
+			return true, nil
+		}
+		// Test for existing non-matching Copyright notice
+		re := regexp.MustCompile(`/*(\s)*Copyright `)
+		if re.FindStringIndex(string(targetBuf)) != nil {
 			return true, nil
 		}
 	}
