@@ -10,16 +10,15 @@ import (
 	"testing"
 )
 
-func TestDockerfileApplier_ApplyHeader(t *testing.T){
+func TestDockerfileApplier_ApplyHeader(t *testing.T) {
 	tc := newTagContext(t)
-	defer func() { _ = tc.templateFiles.dTemplateFile.Close()}()
-
+	defer func() { _ = tc.templateFiles.dTemplateFile.Close() }()
 
 	tmpDir, err := ioutil.TempDir("", t.Name())
 	if err != nil {
 		t.Fatalf("failed to create temp directory")
 	}
-	defer func() { _ = os.RemoveAll(tmpDir)}()
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	files := []string{
 		"Dockerfile.nodirectives",
@@ -31,7 +30,7 @@ func TestDockerfileApplier_ApplyHeader(t *testing.T){
 	d := dockerfileApplier{}
 	for _, f := range files {
 		fileName := f
-		t.Run(fileName, func(t *testing.T){
+		t.Run(fileName, func(t *testing.T) {
 			testfile := filepath.Join(tmpDir, fileName)
 			copyFile(t, "./testdata/"+fileName, testfile)
 
@@ -44,7 +43,7 @@ func TestDockerfileApplier_ApplyHeader(t *testing.T){
 	}
 }
 
-func TestDockerfileApplier_CheckHeader(t *testing.T){
+func TestDockerfileApplier_CheckHeader(t *testing.T) {
 	files := []string{
 		// The non-golden files don't have a header present
 		"Dockerfile.nodirectives",
@@ -61,11 +60,11 @@ func TestDockerfileApplier_CheckHeader(t *testing.T){
 
 	d := dockerfileApplier{}
 	tc := newTagContext(t)
-	defer func() { _ = tc.templateFiles.dTemplateFile.Close()}()
+	defer func() { _ = tc.templateFiles.dTemplateFile.Close() }()
 	for _, f := range files {
 		fileName := f
-		t.Run(fileName, func(t *testing.T){
-			f, err := os.Open("./testdata/"+ fileName)
+		t.Run(fileName, func(t *testing.T) {
+			f, err := os.Open("./testdata/" + fileName)
 			if err != nil {
 				t.Fatalf("failed to optn file %s: %+v", fileName, err)
 			}
@@ -82,16 +81,15 @@ func TestDockerfileApplier_CheckHeader(t *testing.T){
 	}
 }
 
-
-func newTagContext(t *testing.T) TagContext{
+func newTagContext(t *testing.T) TagContext {
 	t.Helper()
-	templateFile, err := loadTemplate( "./testdata/templates/", "dockerfile.txt")
+	templateFile, err := loadTemplate("./testdata/templates/", "dockerfile.txt")
 	if err != nil {
 		t.Fatalf("failed to load dockerfile template")
 	}
 	return TagContext{
 		templateFiles: TemplateFiles{dTemplateFile: templateFile},
-		templatePath:   "./testdata/templates/",
+		templatePath:  "./testdata/templates/",
 	}
 }
 

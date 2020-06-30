@@ -10,16 +10,15 @@ import (
 	"testing"
 )
 
-func TestBashApplier_ApplyHeader(t *testing.T){
+func TestBashApplier_ApplyHeader(t *testing.T) {
 	tc := newBashTagContext(t)
-	defer func() { _ = tc.templateFiles.dTemplateFile.Close()}()
-
+	defer func() { _ = tc.templateFiles.dTemplateFile.Close() }()
 
 	tmpDir, err := ioutil.TempDir("", t.Name())
 	if err != nil {
 		t.Fatalf("failed to create temp directory")
 	}
-	defer func() { _ = os.RemoveAll(tmpDir)}()
+	defer func() { _ = os.RemoveAll(tmpDir) }()
 
 	files := []string{
 		"bash.simple",
@@ -33,7 +32,7 @@ func TestBashApplier_ApplyHeader(t *testing.T){
 	d := bashApplier{}
 	for _, f := range files {
 		fileName := f
-		t.Run(fileName, func(t *testing.T){
+		t.Run(fileName, func(t *testing.T) {
 			testfile := filepath.Join(tmpDir, fileName)
 			copyBashFile(t, "./testdata/"+fileName, testfile)
 
@@ -46,7 +45,7 @@ func TestBashApplier_ApplyHeader(t *testing.T){
 	}
 }
 
-func TestBashFileApplier_CheckHeader(t *testing.T){
+func TestBashFileApplier_CheckHeader(t *testing.T) {
 	files := []string{
 		// The non-golden files don't have a header present
 		"bash.simple",
@@ -67,11 +66,11 @@ func TestBashFileApplier_CheckHeader(t *testing.T){
 
 	d := bashApplier{}
 	tc := newBashTagContext(t)
-	defer func() { _ = tc.templateFiles.dTemplateFile.Close()}()
+	defer func() { _ = tc.templateFiles.dTemplateFile.Close() }()
 	for _, f := range files {
 		fileName := f
-		t.Run(fileName, func(t *testing.T){
-			f, err := os.Open("./testdata/"+ fileName)
+		t.Run(fileName, func(t *testing.T) {
+			f, err := os.Open("./testdata/" + fileName)
 			if err != nil {
 				t.Fatalf("failed to optn file %s: %+v", fileName, err)
 			}
@@ -88,15 +87,15 @@ func TestBashFileApplier_CheckHeader(t *testing.T){
 	}
 }
 
-func newBashTagContext(t *testing.T) TagContext{
+func newBashTagContext(t *testing.T) TagContext {
 	t.Helper()
-	templateFile, err := loadTemplate( "./testdata/templates/", "bash.txt")
+	templateFile, err := loadTemplate("./testdata/templates/", "bash.txt")
 	if err != nil {
 		t.Fatalf("failed to load bash template")
 	}
 	return TagContext{
 		templateFiles: TemplateFiles{shTemplateFile: templateFile},
-		templatePath:   "./testdata/templates/",
+		templatePath:  "./testdata/templates/",
 	}
 }
 
