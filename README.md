@@ -2,8 +2,8 @@
 
 Prepends project files with given template.
 
-- Can be used for adding licence or copyright information on src files of project.
-- Skip file, if template (as provided) already present 
+- Can be used for adding or removing licence or copyright information on src files of project.
+- Skip file, if template (as provided) already present
 - Supports Golang source files, Dockerfile, Makefiles and bash scripts
    - Take cares of compiler flags for golang source files and shebang of bash scripts.
    - Take cares of Golang Package comments too.
@@ -26,6 +26,8 @@ Usage of ltag:
         exclude folders (default "vendor")
   -path string
         project path (default ".")
+  - remove
+        remove header if present
   -t string
         template files path (default "./template")
   -v    verbose output

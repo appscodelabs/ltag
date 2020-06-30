@@ -15,7 +15,6 @@ type bashApplier struct {
 }
 
 func (g *bashApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) {
-
 	//Check compiler flags.
 	sbFlag, sbBuf, err := g.checkSheBang(target)
 	if err != nil {
@@ -52,7 +51,6 @@ func (g *bashApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) 
 }
 
 func (g *bashApplier) ApplyHeader(path string, t *TagContext) error {
-
 	file, err := os.OpenFile(path, os.O_RDONLY, 0666)
 	if err != nil {
 		return err
@@ -136,4 +134,19 @@ func (g *bashApplier) checkSheBang(target *os.File) (bool, []byte, error) {
 	}
 
 	return false, nil, nil
+}
+
+func (g *bashApplier) RemoveHeader(filename string) error {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(data), "\n")
+	start, end := FindBashCopyright(lines)
+	if start > -1 && end > -1 {
+		lines = append(lines[:start], lines[end+1:]...)
+	}
+
+	return ioutil.WriteFile(filename, TrimBlanks(lines), 0644)
 }
