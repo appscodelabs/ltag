@@ -22,6 +22,7 @@ const (
 type Applier interface {
 	CheckHeader(target *os.File, t *TagContext) (bool, error)
 	ApplyHeader(path string, t *TagContext) error
+	RemoveHeader(path string) error
 }
 
 //TagContext keeps context info for Applier
@@ -30,6 +31,7 @@ type TagContext struct {
 	templatePath  string
 	templateFiles TemplateFiles
 	dryRun        bool
+	removeHeader  bool
 	outfileList   []string
 }
 
@@ -46,6 +48,7 @@ func main() {
 	excludes := flag.String("excludes", "vendor", "exclude folders")
 	tpath := flag.String("t", "./template", "template files path")
 	dryRun := flag.Bool("check", false, "check files missing header")
+	removeHeader := flag.Bool("remove", false, "remove header if present")
 	verbose := flag.Bool("v", false, "verbose output")
 	flag.Parse()
 
@@ -93,7 +96,9 @@ func main() {
 		excludeList:   excludeList,
 		templateFiles: templateFiles,
 		templatePath:  *tpath,
-		dryRun:        *dryRun}
+		dryRun:        *dryRun,
+		removeHeader:  *removeHeader,
+	}
 
 	if err = filepath.Walk(*ppath, t.tagFiles); err != nil {
 		panic(err)
@@ -156,7 +161,7 @@ func (t *TagContext) tagFiles(path string, f os.FileInfo, err error) error {
 				applier = &makefileApplier{}
 				processed = true
 			}
-			if strings.ToLower(fname[0]) == "dockerfile" && t.templateFiles.dTemplateFile != nil {
+			if strings.EqualFold(fname[0], "Dockerfile") && t.templateFiles.dTemplateFile != nil {
 				applier = &dockerfileApplier{}
 				processed = true
 			}
@@ -165,11 +170,11 @@ func (t *TagContext) tagFiles(path string, f os.FileInfo, err error) error {
 				applier = &golangApplier{}
 				processed = true
 			}
-			if strings.ToLower(fname[0]) == "dockerfile" && t.templateFiles.dTemplateFile != nil {
+			if strings.EqualFold(fname[0], "Dockerfile") && t.templateFiles.dTemplateFile != nil {
 				applier = &dockerfileApplier{}
 				processed = true
 			}
-			if strings.ToLower(fname[0]) == "makefile" && t.templateFiles.mTemplateFile != nil {
+			if strings.EqualFold(fname[0], "Makefile") && t.templateFiles.mTemplateFile != nil {
 				applier = &makefileApplier{}
 				processed = true
 			}
@@ -182,6 +187,11 @@ func (t *TagContext) tagFiles(path string, f os.FileInfo, err error) error {
 			return nil
 		}
 		processed = false
+
+		if t.removeHeader {
+			return applier.RemoveHeader(path)
+		}
+
 		headerExist, err := applier.CheckHeader(file, t)
 		if err != nil {
 			return err

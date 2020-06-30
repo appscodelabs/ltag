@@ -155,3 +155,18 @@ func (g *dockerfileApplier) checkParserDirectives(target *os.File) (bool, []byte
 	}
 	return true, buf, nil
 }
+
+func (g *dockerfileApplier) RemoveHeader(filename string) error {
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return err
+	}
+
+	lines := strings.Split(string(data), "\n")
+	start, end := FindBashCopyright(lines)
+	if start > -1 && end > -1 {
+		lines = append(lines[:start], lines[end+1:]...)
+	}
+
+	return ioutil.WriteFile(filename, TrimBlanks(lines), 0644)
+}
