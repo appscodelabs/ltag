@@ -9,8 +9,7 @@ import (
 	"strings"
 )
 
-type makefileApplier struct {
-}
+type makefileApplier struct{}
 
 func (g *makefileApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) {
 	tbuf, err := ioutil.ReadFile(filepath.Join(t.templatePath, "makefile.txt"))
@@ -53,7 +52,7 @@ func (g *makefileApplier) ApplyHeader(path string, t *TagContext) error {
 		return nil
 	}
 
-	//Reset the read pointers to begining of file.
+	// Reset the read pointers to begining of file.
 	t.templateFiles.mTemplateFile.Seek(0, 0)
 	file.Seek(0, 0)
 

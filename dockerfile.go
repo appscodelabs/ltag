@@ -11,8 +11,7 @@ import (
 	"strings"
 )
 
-type dockerfileApplier struct {
-}
+type dockerfileApplier struct{}
 
 func (g *dockerfileApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) {
 	dFlag, dBuf, err := g.checkParserDirectives(target)

@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-//Return values
+// Return values
 const (
 	FileReadError = 0
 	NormalFiles   = 1
@@ -18,14 +18,14 @@ const (
 	IsExecutable = 0111
 )
 
-//Applier interface required to implement for new file type
+// Applier interface required to implement for new file type
 type Applier interface {
 	CheckHeader(target *os.File, t *TagContext) (bool, error)
 	ApplyHeader(path string, t *TagContext) error
 	RemoveHeader(path string) error
 }
 
-//TagContext keeps context info for Applier
+// TagContext keeps context info for Applier
 type TagContext struct {
 	excludeList   []string
 	templatePath  string
@@ -35,7 +35,7 @@ type TagContext struct {
 	outfileList   []string
 }
 
-//TemplateFiles stores template of header
+// TemplateFiles stores template of header
 type TemplateFiles struct {
 	goTemplateFile *os.File
 	shTemplateFile *os.File
@@ -90,7 +90,8 @@ func main() {
 		mTemplateFile:  makeTFile,
 		shTemplateFile: bashTFile,
 		goTemplateFile: goTFile,
-		dTemplateFile:  dTFile}
+		dTemplateFile:  dTFile,
+	}
 
 	t := TagContext{
 		excludeList:   excludeList,
@@ -119,7 +120,6 @@ func main() {
 }
 
 func (t *TagContext) tagFiles(path string, f os.FileInfo, err error) error {
-
 	var applier Applier
 	processed := false
 
@@ -152,7 +152,7 @@ func (t *TagContext) tagFiles(path string, f os.FileInfo, err error) error {
 		defer file.Close()
 
 		fname := strings.Split(f.Name(), ".")
-		if len(fname) == 1 { //Without extension.
+		if len(fname) == 1 { // Without extension.
 			if f.Mode()&IsExecutable != 0 && t.templateFiles.shTemplateFile != nil {
 				applier = &bashApplier{}
 				processed = true

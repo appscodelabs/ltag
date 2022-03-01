@@ -11,11 +11,10 @@ import (
 	"strings"
 )
 
-type bashApplier struct {
-}
+type bashApplier struct{}
 
 func (g *bashApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) {
-	//Check compiler flags.
+	// Check compiler flags.
 	sbFlag, sbBuf, err := g.checkSheBang(target)
 	if err != nil {
 		return false, err
@@ -68,7 +67,7 @@ func (g *bashApplier) ApplyHeader(path string, t *TagContext) error {
 		return nil
 	}
 
-	//Reset the read pointers to begining of file.
+	// Reset the read pointers to begining of file.
 	t.templateFiles.goTemplateFile.Seek(0, 0)
 	file.Seek(0, 0)
 
