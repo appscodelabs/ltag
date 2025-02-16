@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -21,7 +20,7 @@ func (g *bashApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) 
 	}
 	target.Seek(0, 0)
 
-	tbuf, err := ioutil.ReadFile(filepath.Join(t.templatePath, "bash.txt"))
+	tbuf, err := os.ReadFile(filepath.Join(t.templatePath, "bash.txt"))
 	if err != nil {
 		return false, err
 	}
@@ -50,7 +49,7 @@ func (g *bashApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) 
 }
 
 func (g *bashApplier) ApplyHeader(path string, t *TagContext) error {
-	file, err := os.OpenFile(path, os.O_RDONLY, 0666)
+	file, err := os.OpenFile(path, os.O_RDONLY, 0o666)
 	if err != nil {
 		return err
 	}
@@ -78,7 +77,7 @@ func (g *bashApplier) ApplyHeader(path string, t *TagContext) error {
 	file.Seek(0, 0)
 
 	tempFile := path + ".tmp"
-	tFile, err := os.OpenFile(tempFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	tFile, err := os.OpenFile(tempFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o666)
 	if err != nil {
 		return err
 	}
@@ -136,7 +135,7 @@ func (g *bashApplier) checkSheBang(target *os.File) (bool, []byte, error) {
 }
 
 func (g *bashApplier) RemoveHeader(filename string) error {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
@@ -147,5 +146,5 @@ func (g *bashApplier) RemoveHeader(filename string) error {
 		lines = append(lines[:start], lines[end+1:]...)
 	}
 
-	return ioutil.WriteFile(filename, TrimBlanks(lines), 0644)
+	return os.WriteFile(filename, TrimBlanks(lines), 0o644)
 }

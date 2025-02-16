@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,7 +11,7 @@ import (
 type makefileApplier struct{}
 
 func (g *makefileApplier) CheckHeader(target *os.File, t *TagContext) (bool, error) {
-	tbuf, err := ioutil.ReadFile(filepath.Join(t.templatePath, "makefile.txt"))
+	tbuf, err := os.ReadFile(filepath.Join(t.templatePath, "makefile.txt"))
 	if err != nil {
 		return false, err
 	}
@@ -35,7 +34,7 @@ func (g *makefileApplier) CheckHeader(target *os.File, t *TagContext) (bool, err
 }
 
 func (g *makefileApplier) ApplyHeader(path string, t *TagContext) error {
-	file, err := os.OpenFile(path, os.O_RDONLY, 0666)
+	file, err := os.OpenFile(path, os.O_RDONLY, 0o666)
 	if err != nil {
 		return err
 	}
@@ -57,7 +56,7 @@ func (g *makefileApplier) ApplyHeader(path string, t *TagContext) error {
 	file.Seek(0, 0)
 
 	tempFile := path + ".tmp"
-	tFile, err := os.OpenFile(tempFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0666)
+	tFile, err := os.OpenFile(tempFile, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o666)
 	if err != nil {
 		return err
 	}
@@ -83,7 +82,7 @@ func (g *makefileApplier) ApplyHeader(path string, t *TagContext) error {
 }
 
 func (g *makefileApplier) RemoveHeader(filename string) error {
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return err
 	}
@@ -94,5 +93,5 @@ func (g *makefileApplier) RemoveHeader(filename string) error {
 		lines = append(lines[:start], lines[end+1:]...)
 	}
 
-	return ioutil.WriteFile(filename, TrimBlanks(lines), 0644)
+	return os.WriteFile(filename, TrimBlanks(lines), 0o644)
 }

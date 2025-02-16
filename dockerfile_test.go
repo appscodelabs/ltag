@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,7 +13,7 @@ func TestDockerfileApplier_ApplyHeader(t *testing.T) {
 	tc := newTagContext(t)
 	defer func() { _ = tc.templateFiles.dTemplateFile.Close() }()
 
-	tmpDir, err := ioutil.TempDir("", t.Name())
+	tmpDir, err := os.MkdirTemp("", t.Name())
 	if err != nil {
 		t.Fatalf("failed to create temp directory")
 	}
@@ -95,22 +94,22 @@ func newTagContext(t *testing.T) TagContext {
 
 func copyFile(t *testing.T, src, dst string) {
 	t.Helper()
-	input, err := ioutil.ReadFile(src)
+	input, err := os.ReadFile(src)
 	if err != nil {
 		t.Fatalf("failed to read %s: %+v", src, err)
 	}
-	err = ioutil.WriteFile(dst, input, 0777)
+	err = os.WriteFile(dst, input, 0o777)
 	if err != nil {
 		t.Fatalf("failed to write %s: %+v", dst, err)
 	}
 }
 
 func compareFiles(t *testing.T, a, b string) {
-	contentA, err := ioutil.ReadFile(a)
+	contentA, err := os.ReadFile(a)
 	if err != nil {
 		t.Fatalf("failed to read file %s: %+v", a, err)
 	}
-	contentB, err := ioutil.ReadFile(b)
+	contentB, err := os.ReadFile(b)
 	if err != nil {
 		t.Fatalf("failed to read golden file %s: %+v", b, err)
 	}
